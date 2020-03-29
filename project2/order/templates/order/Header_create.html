@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+{% extends 'order/order_base.html' %}
+<html>
+
+
+<head>
+    <meta charset="UTF-8">
+    <title>New Order</title>
+</head>
+<body>
+{% load l10n %}
+{% block content %}
+
+
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="#">Home</a></li>
+    <li class="breadcrumb-item"><a href="#">Library</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Data</li>
+  </ol>
+</nav>
+
+    <form class="Header_form" action="." method="post">{% csrf_token %}
+
+            <div class="row">
+                <div class="col-auto ml-3 mb-2">
+                    {{form.po_number}}
+                </div>
+                <div class="col-auto ml-1 mb-2">
+                    {{form.customer}}
+                </div>
+                <div class="col-auto ml-1 mb-2">
+                    {{form.shipping_adress}}
+                </div>
+
+                <div class="col-auto">
+                    {{form.status}}
+                </div>
+            </div>
+            {{form.comments}}
+
+
+
+
+
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+
+{% endblock %}
+
+</body>
+</html>

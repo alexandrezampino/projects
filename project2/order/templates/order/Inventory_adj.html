@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+{% extends 'order/order_base.html' %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Order</title>
+</head>
+<body>
+{% block content %}
+<form method="post"> {% csrf_token %}
+
+    {{form}}
+
+
+<input type="submit" value="Save">
+</form>
+
+ {% endblock %}
+</body>
+
+</html>

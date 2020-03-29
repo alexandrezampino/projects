@@ -1,0 +1,17 @@
+<!-- templates/home.html -->
+<!DOCTYPE html>
+{% extends 'order/order_base.html' %}
+<link href="https://stackpath.bootstrapcdn.com/bootswatch/4.4.1/lux/bootstrap.min.css" rel="stylesheet" integrity="sha384-oOs/gFavzADqv3i5nCM+9CzXe3e5vXLXZ5LZ7PplpsWpTCufB7kqkTlC9FtZ5nJo" crossorigin="anonymous">
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+<h3 class="m-3">Hi {{ user.username }}!</h3>
+  <p class="ml-3"><a href="{% url 'logout' %}">logout</a></p>
+  <p class="ml-3"><a href="{% url 'password_change' %}">password_change</a></p>
+{% else %}
+  <p class="ml-3">You are not logged in</p>
+  <p class="ml-3"><a href="{% url 'login' %}">login</a></p>
+{% endif %}
+{% endblock %}

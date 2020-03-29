@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+{% extends 'order/order_base.html' %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Order</title>
+</head>
+<body>
+{% block content %}
+<form method="post"> {% csrf_token %}
+
+    <p class="ml-3">Are You sure you want to ship this order?</p>
+    <p class="ml-3">Please check the Credit datas before shipping</p>
+    <p class="ml-3">finally put today's date below to acknowledge</p>
+    <div class="ml-3"> {{form.shipped_date}}</div>
+
+
+
+
+<input class=" m-3 btn btn-primary "type="submit" value="Save">
+</form>
+
+<table class="table ml-3">
+        <thead>
+            <tr>
+                <th scope="col" class="text-primary">Total Net</th>
+                <th scope="col" class="text-primary">Total Price</th>
+
+
+            </tr>
+        </thead>
+        <tbody>
+ <div class="text ml-3 mt-5" >
+
+ </div>
+            {% for object in order %}
+            <tr>
+              <th scope="row">{{object.total_net_price}}</th>
+              <td>{{object.total_order_price}}</td>
+
+            </tr>
+            {% endfor %}
+
+        </tbody>
+
+
+    </table>
+
+ {% endblock %}
+</body>
+
+</html>

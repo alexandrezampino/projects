@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+{% extends 'order/order_base.html' %}
+{% load mathfilters %}
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+
+</head>
+<body>
+{% block content %}
+ <title>Inventory</title>
+{% load mathfilters %}
+<div class="h1 text m-3">Inventory Report</div>
+    <table class="table ml-3">
+        <thead>
+            <tr>
+                <th scope="col" class="text-primary">Product</th>
+                <th scope="col" class="text-primary">Inventory</th>
+                <th scope="col" class="text-primary">ATP </th>
+                <th scope="col" class="text-primary">Entered Qty</th>
+                <th scope="col" class="text-primary">Committed qty </th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for object in inventory.all_product %}
+            <tr>
+              <th scope="row">{{object.name}}</th>
+              <td>{{object.inventory}}</td>
+              <td>{{object.inventory|sub:object.inventory_committed}}</td>
+              <td>{{object.inventory_entered}}</td>
+              <td>{{object.inventory_committed}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+
+    </table>
+<div class="h2 text m-3">Inventory adjustments</div>
+<a class="btn btn-info btn-sm ml-3" href="{% url 'order:inventoryadj'%}">Proceed with Inventory Changes</a>
+
+ {% endblock %}
+</body>
+
+</html>

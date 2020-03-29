@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+{% extends 'order/order_base.html' %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Order</title>
+</head>
+<body>
+{% block content %}
+<form method="post"> {% csrf_token %}
+
+    Please enter a valid Schedule invoice as DD/MM/YYYY
+    {{form.invoice_date}}
+    Please enter a valid  invoice number
+    {{form.invoice_number}}
+
+
+<input type="submit" value="Save">
+</form>
+
+
+
+ {% endblock %}
+</body>
+
+</html>

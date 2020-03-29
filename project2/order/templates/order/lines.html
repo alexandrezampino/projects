@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+{% extends 'order/order_base.html' %}
+{% load crispy_forms_tags %}
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+{% block content %}
+<body>
+
+    <h1>Order</h1>
+    {% load crispy_forms_tags %}
+<form method="post">{% csrf_token %}
+  <div class="row">
+
+            <div class="ml-5" >{{form.po_number|as_crispy_field}}</div>
+            <div class="ml-2">{{form.customer|as_crispy_field}}</div>
+            <div class="ml-2">{{form.shipping_adress|as_crispy_field}}</div>
+            <div class="ml-2">{{form.payment_terms|as_crispy_field}}</div>
+
+  </div>
+
+
+
+
+
+
+
+    <div class="w-auto ml-3 p-3 h-25 d-inline-block" >{{form.comments|as_crispy_field}}</div>
+
+    <h2>Lines</h2>
+
+    <form class=" form">
+    {{ LinesFormset.management_form }}
+     <table>
+
+            {{ Lines }}
+
+     </table>
+
+
+
+
+<input type="submit" value="Save">
+</form>
+
+</body>
+{% endblock %}
+
+
+</html>

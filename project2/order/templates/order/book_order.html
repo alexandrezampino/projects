@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+{% extends 'order/order_base.html' %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Order</title>
+</head>
+<body>
+{% block content %}
+<form method="post"> {% csrf_token %}
+
+    Please enter a valid Schedule Ship Date as DD/MM/YYYY
+    {{form.sch_ship_date}}
+
+
+
+<input type="submit" value="Save">
+</form>
+
+<table class="table ml-3">
+        <thead>
+            <tr>
+                <th scope="col" class="text-primary">Product</th>
+                <th scope="col" class="text-primary">Requested Qty</th>
+
+
+            </tr>
+        </thead>
+        <tbody>
+ <div class="text ml-3 mt-5" >
+     <p>Please make sure to check the atp quantity against the requested quantity via the inventory</p>
+ </div>
+            {% for object in Lines %}
+            <tr>
+              <th scope="row">{{object.product}}</th>
+              <td>{{object.quantity}}</td>
+
+            </tr>
+            {% endfor %}
+
+        </tbody>
+
+
+    </table>
+
+ {% endblock %}
+</body>
+
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends 'order/order_base.html' %}
+<head>
+
+    <meta charset="UTF-8">
+    <title>Entered orders</title>
+</head>
+
+<body>
+ {% block content %}
+<h3>List of Booked Orders</h3>
+ <table class="table">
+  <thead>
+    <tr>
+      <th scope="col" class="text-primary">ID</th>
+      <th scope="col" class="text-primary">Po number</th>
+      <th scope="col" class="text-primary">Customer</th>
+      <th scope="col" class="text-primary">Sch ship date</th>
+        <th scope="col" class="text-primary">Order Ack</th>
+    </tr>
+  </thead>
+    <tbody>
+    {% for object in booked.all_booked %}
+      <tr>
+
+            <th scope="row"><a href="{% url 'order:booked' pk=object.pk %}">{{object.pk}}</a></th>
+            <td>{{object.po_number}}</td>
+            <td>{{object.customer}}</td>
+            <td>{{object.sch_ship_date}}</td>
+            <td><a href="{% url 'order:orderack' pk=object.pk %}">Link to OA</a</td>
+
+
+      </tr>
+     {% endfor %}
+       </tbody>
+
+
+
+    {% endblock %}
+ </table>
+</body>
+</html>
