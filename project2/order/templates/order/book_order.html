@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% extends 'order/order_base.html' %}
+{% load mathfilters %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -22,18 +23,20 @@
             <tr>
                 <th scope="col" class="text-primary">Product</th>
                 <th scope="col" class="text-primary">Requested Qty</th>
+                <th scope="col" class="text-primary">ATP Quantity</th>
 
 
             </tr>
         </thead>
         <tbody>
  <div class="text ml-3 mt-5" >
-     <p>Please make sure to check the atp quantity against the requested quantity via the inventory</p>
+     <p>Please make sure to check the atp quantity against the requested quantity</p>
  </div>
             {% for object in Lines %}
             <tr>
               <th scope="row">{{object.product}}</th>
               <td>{{object.quantity}}</td>
+              <td>{{object.product.inventory|sub:object.product.inventory_committed}}</td>
 
             </tr>
             {% endfor %}

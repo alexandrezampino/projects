@@ -5,11 +5,16 @@ from django.contrib.auth import authenticate
 from django.contrib import admin
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import *
+from django.db.models.functions import Right, Left
 from decimal import Decimal
 from django.dispatch import receiver
 from django.db.models.signals import *
-from django.utils import timezone
+from django.utils import *
 from django.urls import reverse
+import datetime
+from datetime import timedelta, datetime
+import re
+import calendar
 from django.utils.dateparse import parse_date
 CURRENCY=settings.CURRENCY
 # Create your models here.
@@ -21,7 +26,7 @@ class Payment_terms_choices(models.Model):
 
 class Payment_terms(models.Model):
     name=models.CharField(max_length=20)
-    type = models.ForeignKey(Payment_terms_choices, on_delete=models.PROTECT,blank=True,null=True )
+    type = models.ForeignKey(Payment_terms_choices, on_delete=models.PROTECT,blank=True,null=True, related_name='type', name='type' )
     delta=models.DecimalField(max_digits=2, decimal_places=0, default=0)
 
     def __str__(self):
@@ -81,7 +86,7 @@ class Product(models.Model):
 
 
         Line_items = Line.objects.filter(product__name=self, po__stage='ENTERED')
-        self.inventory_entered=Decimal(Line_items.aggregate(Sum('quantity'))['quantity__sum'] if Line_items.exists() else 100.00)
+        self.inventory_entered=Decimal(Line_items.aggregate(Sum('quantity'))['quantity__sum'] if Line_items.exists() else 00.00)
 
         Line_items_committed=Line.objects.filter(product__name=self)
         self.inventory_committed=Decimal(Line_items_committed.aggregate(Sum('committed_qty'))['committed_qty__sum'] if Line_items_committed.exists() else 0.00)
@@ -132,12 +137,15 @@ class Order(models.Model):
                                           decimal_places=2, default=0)
     absolute_date=models.DateField(blank=True, null=True)
     order_kw=models.DecimalField(name='order_kw', blank=True, null=True, max_digits=10, decimal_places=2, default=0)
-    invoice_number=models.CharField(max_length=50,default='Inv-01', name='invoice_number')
+    invoice_number=models.CharField(max_length=50, name='invoice_number', blank=True, null=True)
     invoice_balance=models.DecimalField(name='invoice_balance', blank=True, null=True,default=0, decimal_places=2,
                                         max_digits=10)
     payment_date=models.DateField(name='payment_date', blank=True, null=True)
-    payment_terms=models.ForeignKey(Payment_terms, on_delete=models.PROTECT,blank=True, null=True, default=1, name='payment_terms')
-
+    payment_terms=models.ForeignKey(Payment_terms, on_delete=models.PROTECT,blank=True, null=True, default=1, name='payment_terms', related_name='payment_terms')
+    invoice_due_date=models.DateField(blank=True, null=True)
+    str_payterms=models.CharField(max_length=50,default='bla', blank=True, null= True, name='str_payterms')
+    str_pay_type=models.CharField(max_length=50,default='bla', blank=True, null= True, name='str_pay_type')
+    str_pay_days=models.CharField(max_length=50,default='bla', blank=True, null= True, name='str_pay_days')
 
     def tag_total_order_price(self):
         return f'{self.total_order_price} {CURRENCY}'
@@ -145,6 +153,8 @@ class Order(models.Model):
     def get_stage(self):
         stage=self.stage
         return stage
+
+
 
     def ship(self, args, **kwargs):
         self.shipped_date=timezone.now()
@@ -167,7 +177,10 @@ class Order(models.Model):
 
             super().save(*args, **kwargs)
 
+    def inv_balance(self, *args, **kwargs):
+        self.invoice_balance=self.total_order_price
 
+        super(Order,self).save(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         order_items=self.po.all()
@@ -177,6 +190,26 @@ class Order(models.Model):
         self.total_order_price=Decimal(self.total_order_price)
         self.order_kw=order_items.aggregate(Sum('kw'))['kw__sum'] if order_items.exists() else 0.00
         self.order_kw=Decimal(self.order_kw)
+
+        self.invoice_balance=self.total_order_price if self.invoice_balance == 0.00 else self.invoice_balance
+        self.str_payterms=str(self.payment_terms.name)
+        s= self.str_payterms
+        self.str_pay_type=s[-3:]
+        self.str_pay_days=s[0:2]
+        if s == 'PREPAY' and self.stage == 'INVOICED':
+            self.invoice_due_date=self.invoice_date
+        elif self.str_pay_type == 'NET' and self.stage == 'INVOICED':
+            d = int(self.str_pay_days)
+            da = timedelta(days=d)
+            self.invoice_due_date = self.invoice_date+da
+        elif self.str_pay_type == 'EOM' and self.stage == 'INVOICED':
+            d = int(self.str_pay_days)
+            da = timedelta(days=d)
+            date=(self.invoice_date)+da
+            next_month=date.replace(day=28)+timedelta(days=4)
+            self.invoice_due_date=next_month-timedelta(days=next_month.day)
+
+
         if self.invoice_date is not None:
             self.absolute_date = self.invoice_date
             self.stage = 'INVOICED'
@@ -194,14 +227,12 @@ class Order(models.Model):
 
 
 
-
     def get_absolute_url(self, **kwargs):
         return reverse('order:order', kwargs={'pk': self.pk})
 
 
 
-    def __str__(self):
-        return self.pk
+
 
 
 class Line(models.Model):
@@ -247,11 +278,42 @@ class Line(models.Model):
 
         super().save(*args,**kwargs)
 
+class Supply_Header(models.Model):
+    name=models.CharField(max_length=500, blank=False, null=False,default='Supply')
+    ETA_date=models.DateField(blank=True, null=True)
+    ETD_date=models.DateField(blank=True, null=True)
+    status=models.CharField(max_length=20, blank=False, null=False,default='In transit')
+
+    def get_absolute_url(self, **kwargs):
+        return reverse('order:supply', kwargs={'pk': self.pk})
+
+
+class Supply_Lines(models.Model):
+    supply_header=models.ForeignKey(Supply_Header, related_name='supply_header', on_delete=models.CASCADE,blank=True, null=True)
+    supply_product=models.ForeignKey(Product, related_name='supply_product', on_delete=models.PROTECT)
+    supply_quantity=models.DecimalField(max_digits=6, decimal_places=0, blank=False, null=False)
+    supply_unit_price=models.DecimalField(max_digits=6, decimal_places=2, blank=False, null=False)
+
+class Forecast(models.Model):
+    forecast_sales_rep=models.ForeignKey(User, related_name='forecast_sales_rep', limit_choices_to={'is_staff':False}, on_delete=models.CASCADE)
+    forecast_quantity=models.DecimalField(max_digits=6, decimal_places=0, blank=False, null=False)
+    forecast_product=models.ForeignKey(Product, related_name='forecast_product', on_delete=models.PROTECT, limit_choices_to={'Type':'Micro'})
+    forecast_month_start = models.DateField(blank=False, null=False)
+    forecast_created_by=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, null=True)
 
 
 
-
-
+ #if Right(self.payment_terms.name,3) is 'EOM':
+            #date=(self.invoice_date)+datetime.timedelta(days=self.payment_terms.related_fields('delta'))
+            #next_month=date.replace(day=28)+datetime.timedelta(days=4)
+            #self.invoice_due_date=next_month-datetime.timedelta(days=next_month.day)
+            #self.invoice_due_date.save()
+        #if Right(self.payment_terms.name,3) is 'NET':
+         #   date=self.invoice_date+self.payment_terms.delta
+          #  self.invoice_due_date=date
+          #  self.invoice_due_date.save()
+        #else:
+         #   self.invoice_due_date = self.invoice_date
 
 
 

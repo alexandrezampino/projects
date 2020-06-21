@@ -35,14 +35,16 @@
     {{ LinesFormset.management_form }}
      <table>
 
-            {{ Lines }}
+            <div class ="container">
+           <div class = "row ">{{ Lines.as_p }}</div>
+        </div>
 
      </table>
 
 
 
 
-<input type="submit" value="Save">
+<input class=" m-3 btn btn-primary "type="submit" value="Save">
 </form>
 
 </body>

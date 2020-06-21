@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+{% extends 'order/supply_base.html' %}
+
+<html>
+
+{% load crispy_forms_tags %}
+<head>
+    <meta charset="UTF-8">
+    <title>New Order</title>
+</head>
+
+<body>
+
+{% block content %}
+<form method="get">
+
+
+
+
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h2 class="display align-text-baseline ">Po number | Customer : {{object.po_number}}
+        | {{object.customer}}</h2>
+      <hr class="my-2">
+      <a type="button" class="btn btn-danger   float-right ml-2"
+              href="{% url 'order:deleteorder' pk=object.pk %}">Delete</a>
+      <a class="btn btn-secondary   float-right ml-2"
+          href="{% url 'order:updateorder' pk=object.pk %}" role= "button" value= Update>Update</a>
+      <a class="btn btn-primary   float-right ml-2"
+              href="{% url 'order:book' pk=object.pk %}">Book</a>
+    <h4 >Eventual comments:  {{object.comments}}</h4>
+    <h4 class="small"> Adress :{{object.shipping_adress}} - {{object.shipping_adress.line1}} -
+        {{object.shipping_adress.line2}}- {{object.shipping_adress.city}} -
+        {{object.shipping_adress.zipcode}} - {{object.shipping_adress.iso_code}}</h4>
+      <table class="table">
+  <thead>
+    <tr>
+      <th scope="col" class="text-primary">Current Status</th>
+      <th scope="col" class="text-primary">Created date</th>
+      <th scope="col" class="text-primary">Booked date</th>
+      <th scope="col" class="text-primary">Sch ship date </th>
+      <th scope="col" class="text-primary">Total Net Price</th>
+      <th scope="col" class="text-primary">Total Price</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">{{object.status}}</th>
+      <td>{{object.created_date}}</td>
+      <td>{{object.booked_date}}</td>
+      <td>{{object.sch_ship_date}}</td>
+      <td>{{object.total_net_price}}</td>
+      <td>{{object.total_order_price}}</td>
+    </tr>
+     </tbody>
+</table>
+  </div>
+</div>
+    <h2> Order Lines</h2>
+  <table class="table">
+    <thead>
+      <tr>
+
+        <th scope="col" class="text-primary">Product</th>
+        <th scope="col" class="text-primary">Quantity</th>
+        <th scope="col" class="text-primary">Unit Price</th>
+        <th scope="col" class="text-primary">Total Net Price </th>
+        <th scope="col" class="text-primary">Total Price </th>
+        <th scope="col" class="text-primary">Vat % </th>
+        <th scope="col" class="text-primary">line kw </th>
+
+
+       <tbody>
+    {% for object in Lines %}
+      <tr>
+
+        <th scope="row">{{object.supply_product}}</th>
+        <td>{{object.supply_quantity}}</td>
+        <td>{{object.supply_unit_price}}</td>
+        <td>{{object.net_price}}</td>
+        <td>{{object.total_price}}</td>
+        <td>{{object.line_vat}}</td>
+        <td>{{object.kw}}</td>
+        {% endfor %}
+      </tr>
+       </tbody>
+  </table>
+
+
+{
+</form>
+{% endblock %}
+
+</body>

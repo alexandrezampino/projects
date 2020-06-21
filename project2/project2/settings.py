@@ -146,6 +146,7 @@ USE_TZ = True
 
 USE_THOUSAND_SEPARATOR = True
 # Static files (CSS, JavaScript, Images)
+STATIC_ROOT=os.path.join(BASE_DIR, "static")
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 CRISPY_TEMPLATEPACK='bootstrap4'
 STATIC_URL = '/static/'

@@ -9,7 +9,7 @@
 {% block content %}
 <form method="post"> {% csrf_token %}
 
-    Please enter a valid Schedule invoice as DD/MM/YYYY
+    Please enter a valid invoice date as DD/MM/YYYY
     {{form.invoice_date}}
     Please enter a valid  invoice number
     {{form.invoice_number}}

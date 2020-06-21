@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Ack</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+<body>
+    <header>
+
+    <img src="https://apsystems.com/wp-content/uploads/2018/03/apsystems-logo-300x92.jpg"
+         class="border border-0 img-thumbnail float-right m-1">
+
+        <div class ="container left m-5 ">
+            <h3> <div class ="text-primary bold">To customer: </div></h3>
+            <h5> {{object.customer}} : VAT {{object.customer.vat_number}}</h5>
+            <h5> {{object.customer.bill_line1}}</h5>
+            <h5> {{object.customer.bill_line2|default_if_none:''}}</h5>
+            <h5> {{object.customer.bill_city}}</h5>
+            <h5> {{object.customer.bill_zipcode}}</h5>
+            <h5> {{object.customer.bill_iso_code}}</h5>
+
+        </div>
+        <div class="container center m-5 border border-primary-lg float-center text-center ">
+            <h3>Shipment request of order: {{object.po_number}}</h3>
+        </div>
+        <div class="container-fluid float-left">
+            <div class ="container right ml-4 mt-2 mb-5 ">
+            <h3><div class ="text-primary bold">Ship to:</div></h3>
+                <h5> {{object.customer}}</h5>
+                <h5> {{object.shipping_adress.line1}}</h5>
+                <h5> {{object.shipping_adress.line2|default_if_none:''}}</h5>
+                <h5> {{object.shipping_adress.city}}</h5>
+                <h5> {{object.shipping_adress.zipcode}}</h5>
+                <h5> {{object.shipping_adress.iso_code}}</h5>
+            </div>
+
+
+
+
+        </div>
+    </header>
+
+    <section>
+         <div class="container right m-5"  aria-label="Informatons" ><h4>TERMS and CONDITIONS</h4>
+            <div class ="container right ml-1 mt-5">
+                <table class="table">
+                    <thead>
+                        <tr>
+
+                            <th scope="col" class="text-primary">Payment Terms</th>
+                            <th scope="col" class="text-primary">Incoterm</th>
+                            <th scope="col" class="text-primary">Schedule ship date</th>
+                            <th scope="col" class="text-primary">Sales contact </th>
+                            <th scope="col" class="text-primary"> </th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <td>{{object.payment_terms}}</td>
+                        <td>...</td>
+                        <td>{{object.sch_ship_date}}</td>
+                        <td>{{object.customer.sales_rep.first_name}} {{object.customer.sales_rep.last_name}}</td>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+         <div class ="container right m-5"><h4>  Order Details</h4></div>
+        <div class="hr">
+        </div>
+        <div class ="container right m-5 ">
+            <table class="table">
+                <thead>
+                  <tr>
+
+                        <th scope="col" class="text-primary">Product</th>
+                        <th scope="col" class="text-primary">Product Code</th>
+                        <th scope="col" class="text-primary">Quantity</th>
+
+
+
+                  </tr>
+                </thead>
+                       <tbody>
+                    {% for object in Lines %}
+                      <tr>
+
+                        <th scope="row">{{object.product}}</th>
+                        <td>{{object.product.code}}</td>
+                        <td>{{object.quantity}}</td>
+
+                        {% endfor %}
+                      </tr>
+
+            </table>
+        </div>
+        <div class="">
+
+        </div>
+
+
+        <div class="container m-5">
+            <h3> Disclaimer :</h3>
+                <p class="ml-5 mt-5">The shipment of this order is subject to your credit conditions, for more questions
+                    please
+                    contact your sales representative</p>
+        </div>
+
+
+    </section>
+
+    <footer class="container-fluid fixed-bottom">
+        <div class=" text text-center align-text-bottom">
+        <p> apsysstems VAT and blablabla</p>
+        </div>
+    </footer>
+</body>
+</html>

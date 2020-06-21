@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+{% extends 'order/supply_base.html' %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'order/style.css' %}">
+{% load crispy_forms_tags %}
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+{% block content %}
+<body>
+
+    <h1>Header</h1>
+    {% load crispy_forms_tags %}
+<form method="post">{% csrf_token %}
+  <div class="row">
+            <div class="ml-5" >Name : {{form.name}}</div>
+            <div class="ml-2"> ETD date {{form.ETD_date}}</div>
+            <div class="ml-2">ETA date {{form.ETA_date}}</div>
+
+
+  </div>
+
+
+
+
+
+
+
+    <div class="w-auto ml-3 p-3 h-25 d-inline-block" ></div>
+
+    <h2>Lines</h2>
+
+     <form class=" form">
+
+     <table>
+        <div class ="container">
+           <div class = "row">{{ Lines.as_p }}</div>
+        </div>
+     </table>
+
+
+
+
+<input class=" m-3 btn btn-primary "type="submit" value="Save">
+</form>
+
+</body>
+{% endblock %}
+
+
+</html>
